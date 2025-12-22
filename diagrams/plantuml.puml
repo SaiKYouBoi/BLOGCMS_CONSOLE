@@ -1,0 +1,50 @@
+@startuml
+left to right direction
+
+
+actor Visitor
+actor Author
+actor Editor
+actor Admin
+
+
+Visitor <|-- Author
+Author  <|-- Editor
+Editor  <|-- Admin
+
+
+rectangle "Blog Management System" {
+
+    usecase "Read Articles" as UC_Read
+    usecase "Create Comment" as UC_Comment
+    usecase "Delete Comment" as UC_DeleteComment
+
+    usecase "Create Article" as UC_CreateArticle
+    usecase "Publish Article" as UC_PublishArticle
+    usecase "Edit Article" as UC_EditArticle
+    usecase "Delete Article" as UC_DeleteArticle
+
+    usecase "Create Category" as UC_CreateCategory
+
+    usecase "Create User" as UC_CreateUser
+    usecase "Edit User" as UC_EditUser
+    usecase "Delete User" as UC_DeleteUser
+}
+
+
+Visitor --> UC_Read
+Visitor --> UC_Comment
+
+Author --> UC_CreateArticle
+Author --> UC_PublishArticle
+Author --> UC_EditArticle
+Author --> UC_DeleteArticle
+
+Editor --> UC_DeleteComment
+Editor --> UC_CreateCategory
+
+Admin --> UC_CreateUser
+Admin --> UC_EditUser
+Admin --> UC_DeleteUser
+
+@enduml
