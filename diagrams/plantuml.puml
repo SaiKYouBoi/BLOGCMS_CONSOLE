@@ -1,50 +1,49 @@
 @startuml
 left to right direction
 
-
-actor Visitor
-actor Author
-actor Editor
+actor Visiteur
+actor Auteur
+actor Editeur
 actor Admin
 
+rectangle blogCMS {
 
-Visitor <|-- Author
-Author  <|-- Editor
-Editor  <|-- Admin
+  (Lire les articles) as UC_Read
+  (Créer commentaire) as UC_Comment
 
+  (Authentication) as UC_Auth
 
-rectangle "Blog Management System" {
+  (Créer article) as UC_CreateArticle
+  (Gérer article) as UC_ManageArticle
+  (Publier article) as UC_PublishArticle
 
-    usecase "Read Articles" as UC_Read
-    usecase "Create Comment" as UC_Comment
-    usecase "Delete Comment" as UC_DeleteComment
-
-    usecase "Create Article" as UC_CreateArticle
-    usecase "Publish Article" as UC_PublishArticle
-    usecase "Edit Article" as UC_EditArticle
-    usecase "Delete Article" as UC_DeleteArticle
-
-    usecase "Create Category" as UC_CreateCategory
-
-    usecase "Create User" as UC_CreateUser
-    usecase "Edit User" as UC_EditUser
-    usecase "Delete User" as UC_DeleteUser
+  (Modérer commentaire) as UC_ModerateComment
+  (Gérer les articles) as UC_AllArticles
+  (Créer catégorie) as UC_Category
+  (Gérer utilisateur) as UC_Users
 }
 
+Visiteur --> UC_Read
 
-Visitor --> UC_Read
-Visitor --> UC_Comment
+Auteur --> UC_Read
+Auteur --> UC_CreateArticle
+Auteur --> UC_ManageArticle
 
-Author --> UC_CreateArticle
-Author --> UC_PublishArticle
-Author --> UC_EditArticle
-Author --> UC_DeleteArticle
+Editeur --> UC_AllArticles
+Editeur --> UC_PublishArticle
+Editeur --> UC_ModerateComment
 
-Editor --> UC_DeleteComment
-Editor --> UC_CreateCategory
+Admin --> UC_Users
+Admin --> UC_Category
+Admin --> UC_AllArticles
+Admin --> UC_ModerateComment
 
-Admin --> UC_CreateUser
-Admin --> UC_EditUser
-Admin --> UC_DeleteUser
+' Authentication is required ONLY for logged-in actions
+UC_CreateArticle --> UC_Auth : <<include>>
+UC_ManageArticle --> UC_Auth : <<include>>
+UC_PublishArticle --> UC_Auth : <<include>>
+UC_ModerateComment --> UC_Auth : <<include>>
+UC_Users --> UC_Auth : <<include>>
+UC_Category --> UC_Auth : <<include>>
 
 @enduml
