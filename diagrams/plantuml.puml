@@ -38,7 +38,7 @@ Admin --> UC_Category
 Admin --> UC_AllArticles
 Admin --> UC_ModerateComment
 
-' Authentication is required ONLY for logged-in actions
+
 UC_CreateArticle --> UC_Auth : <<include>>
 UC_ManageArticle --> UC_Auth : <<include>>
 UC_PublishArticle --> UC_Auth : <<include>>

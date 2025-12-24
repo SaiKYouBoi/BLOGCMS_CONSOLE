@@ -1,0 +1,104 @@
+@startuml ZAMTOFIK
+ 
+skinparam ClassAttributeIconSize 0
+
+class User{
+    -id:int
+    -username:string
+    -email:string
+    -password:string
+    -role:string
+    -createdAt:DateTime
+    -lastLogin ?DateTime
+
+    +login():bool
+}
+
+class Author{
+    -bio:bool
+
+    +createArticle()
+    +editArticle()
+    +deleteArticle()
+
+    ' +createNewArticle()
+    ' +editDeleteHisArticle()
+}
+
+class Admin{
+    -isSuperAdmin:bool
+    +createUser()
+    +deleteUser()
+    +updateUser()
+
+    ' +createEditDeleteAllUsers()
+    ' +editDeleteAllaarticles()
+    ' +manageAllCategories()
+    ' +accessStatistics()
+
+    +changeUsersRole()
+}
+
+class Editor{
+    -moderationLevel:string
+
+    +editAnyArticle()
+    +deleteAnyArticle()
+    +publishAnyArticle()
+    +createCategories()
+
+
+    ' +editDeleteAllarticles
+    ' +manageCategories()
+    ' +shareArticle()
+    ' +moderateComment()
+}
+
+class Article{
+    -id:int
+    -title:string
+    -content:string
+    -excerpt:string
+    -status:string
+    -createdAt:DateTime
+    -publishedAt ?DateTime
+
+    +publish()
+    +archive()
+    +update()
+
+}
+
+class Categorie{
+    -id:int
+    -name:string
+    -description:string
+    -parent:?category
+    -createdAt:DateTime
+
+    +addChild()
+    +removeChild()
+}
+
+class Comment {
+  - id : int
+  - content : string
+  - status : string
+  - createdAt : DateTime
+
+  + approve()
+  + reject() 
+}
+
+
+User <|-- Admin
+User <|-- Author
+User <|-- Editor
+
+
+Article --o Author
+
+
+
+
+@enduml
