@@ -1,4 +1,4 @@
-@startuml
+@startuml BLOGCMS
 left to right direction
 
 actor Visiteur

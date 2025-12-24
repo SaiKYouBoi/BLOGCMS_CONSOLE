@@ -1,8 +1,8 @@
-@startuml ZAMTOFIK
+@startuml BLOGCMS
  
 skinparam ClassAttributeIconSize 0
 
-class User{
+abstract class User{
     -id:int
     -username:string
     -email:string
@@ -60,6 +60,7 @@ class Article{
     -content:string
     -excerpt:string
     -status:string
+    -author:Author
     -createdAt:DateTime
     -publishedAt ?DateTime
 
