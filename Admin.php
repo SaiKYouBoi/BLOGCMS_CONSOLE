@@ -59,11 +59,18 @@ class Admin extends User
         return false;
     }
 
-    
-    
-
+    public static function modifyUserbyId($users,$id,$username,$email,$password,$role){
+        global $users;
+        foreach ($users as $index => $user) {
+            if ($user->getUserInfo()['id']=== $id) {
+                //to complete later
+                return true;
+            }
+        }
+        return false;
+    }
 }
-
+ 
 function showAdminMenu()
 {
     global $users;
@@ -145,9 +152,28 @@ function showAdminMenu()
                     break;
                 case 2:
 
+                $newusername = readline("Enter new username:");
+                $newemail = readline("Enter new email:");
+                $newpassword = readline("Enter new password");
+                $newrole = readline("Enter new role:");
                 
+                if(Admin::modifyUserbyId($users,$searchforid,$newusername,$newemail,$newrole,$newpassword)){
+                    echo "user modified successfully\n";
+                }else{
+                    echo "failed to modify user\n";
+                }
+                
+                foreach ($users as $user) {
+                $info = $user->getUserInfo();
+                echo "ID: {$info['id']}\n";
+                echo "Username: {$info['username']}\n";
+                echo "Role: {$info['role']}\n";
+                echo "Email: {$info['email']}\n";
+                echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
+                echo "--------------------------\n";
+                }
 
-                    break;
+                break;
                 default:
                     echo "invalid choice\n";
                     break;

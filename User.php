@@ -77,4 +77,13 @@ abstract class User{
         }
         return null;
     }
+
+    public function setUserName(string $username){
+        $this->username = $username;
+    }
+     public function setUserEmail(string $email){
+        $this->email = $email;
+    }
+
+
 }
