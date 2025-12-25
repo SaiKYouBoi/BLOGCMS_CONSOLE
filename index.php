@@ -19,8 +19,8 @@ $password = readline("Enter Your Password: ");
 if(User::login($users, $email, $password)){
     switch ($user_role) {
         case "admin":{
-            echo "admin";
-            break;
+          showAdminMenu();
+          break;
         }
         case "author":{
             echo "author";
@@ -37,7 +37,3 @@ if(User::login($users, $email, $password)){
 }else {
     echo "Invalid Credentials";
 }
-
-
-
-

@@ -17,16 +17,16 @@ abstract class User{
         string $email,
         string $passwordHash,
         DateTime $createdAt,
-        DateTime $lastLogin,
+        ?DateTime $lastLogin = null,
     ) {
         $this->id = $id;
         $this->username = $username;
         $this->email = $email;
         $this->passwordHash = $passwordHash;
         $this->createdAt = new DateTime();
-        $this->lastLogin = null;
+        $this->lastLogin;
     }
-
+    
     abstract public function getRole():string;
 
     public function getUserInfo():array{
@@ -40,6 +40,24 @@ abstract class User{
         ];
     }
 
+    public static function emailExists(array $users,string $email){
+        foreach($users as $user){
+            if($user->getUserInfo()['email'] === $email){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function usernameExists(array $users,string $username){
+        foreach($users as $user){
+           if($user->getUserInfo()['username'] === $username  ){
+            return true;
+           } 
+        }
+        return false;
+    }
+
     public function verifyPass($plainPass): bool{
         return password_verify($plainPass, $this->passwordHash);
     }
@@ -51,6 +69,7 @@ abstract class User{
                 if($user->verifyPass($pass)){
                     $user_id = $user->getUserInfo()['id'];
                     $user_role = $user->getUserInfo()['role'];
+
                     return true;
                 }
                 return null;
@@ -58,5 +77,4 @@ abstract class User{
         }
         return null;
     }
-    
 }

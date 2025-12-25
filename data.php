@@ -22,7 +22,6 @@ $users = [
     new Author(20, "marine_lebrun", "marine.lebrun@gmail.com", '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', new DateTime('2024-07-22'), new DateTime('2024-12-06'), "Science communicator making complex topics accessible to general audiences.") 
 ];
 
-
 $articles = [
     new Article(
         1,
