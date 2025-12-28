@@ -13,9 +13,18 @@ class Categorie{
     )
     {
         $this->id = $id;
-        $this->id = $name;
-        $this->id = $description;
-        $this->id = $createdAt;
+        $this->name = $name;
+        $this->description= $description;
+        $this->createdAt = $createdAt;
+    }
+
+    public function getCategoryInfo() {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'createdAt' => $this->createdAt
+        ];
     }
 
 }

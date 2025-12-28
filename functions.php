@@ -2,10 +2,10 @@
 
 function showAdminMenu()
 {
-    global $users, $user_id, $articles;
+    global $users, $user_id, $articles,$categories;
     $current_user = null;
-    foreach ($users as $user){
-        if($user->getUserInfo()['id'] === $user_id){
+    foreach ($users as $user) {
+        if ($user->getUserInfo()['id'] === $user_id) {
             $current_user = $user;
             break;
         }
@@ -29,7 +29,7 @@ function showAdminMenu()
     3.exit
         ";
 
-            (int) $umchoice = readline("Your choice:");
+            $umchoice = readline("Your choice:");
 
             switch ($umchoice) {
                 case 1: {
@@ -177,20 +177,56 @@ function showAdminMenu()
                 case 1: {
                     $title = readline("Enter a title:");
                     $content = readline("Enter the content:");
-                    if($current_user->createArticle($title, $content)){
+
+                    echo "Available Categories:\n";
+                    foreach ($categories as $category) {
+                    $info = $category->getCategoryInfo();
+                    echo "ID: {$info['id']} - {$info['name']}\n";
+                    }
+
+                    $category_id = readline("Enter category ID:");
+                    $category_id = empty($category_id) ? null : (int)$category_id;
+
+                    if ($category_id !== null) {
+                    $categoryExists = false;
+
+                    foreach ($categories as $category) {
+                        if ($category->getCategoryInfo()['id'] === $category_id) {
+                            $categoryExists = true;
+                            break;
+                        }
+                    }
+
+                     if (!$categoryExists) {
+                        echo "Category ID not found.\n";
+                        break;
+                    }
+                                                                                                                                                                                                                                                               
+                    if ($current_user->createArticle($title, $content,$category_id)) {
                         echo "Article created successfully";
-                    }else{
+                    } else {
                         echo "Error while creating article";
                     }
                     break;
                 }
+            }
                 case 5: {
                     foreach ($articles as $article) {
                         $info = $article->getArticleInfo();
+                        
                         echo "ID: {$info['id']}\n";
                         echo "Title: {$info['title']}\n";
                         echo "Content: {$info['content']}\n";
                         echo "Status: {$info['status']}\n";
+                        $category_name = "None";
+                        
+                        foreach ($categories as $category) {
+                            if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                                $category_name = $category->getCategoryInfo()['name'];
+                                break;
+                            }
+                        }
+                        echo "Category: {$category_name}\n";
                         echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
                         $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
                         echo "Created at: {$published}\n";
@@ -202,6 +238,7 @@ function showAdminMenu()
                     $found = false;
                     foreach ($articles as $article) {
                         $info = $article->getArticleInfo();
+                        if($info['id'] === (int)$searchfor){
                         echo "ID: {$info['id']}\n";
                         echo "Title: {$info['title']}\n";
                         echo "Content: {$info['content']}\n";
@@ -210,9 +247,10 @@ function showAdminMenu()
                         $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
                         echo "Created at: {$published}\n";
                         echo "--------------------------\n";
-                        echo "1.[Delete]   2.[Modify]\n";
+                        echo "1.[Delete]   2.[Modify]   3.[Publish]\n";
                         $searchforid = $info['id'];
                         $found = true;
+                    }
                     }
 
                     if (!$found) {
@@ -234,53 +272,17 @@ function showAdminMenu()
                             break;
                         }
                         case 2: {
-                            $newtitle = readline("Enter new username:");
-                            $newcontent = readline("Enter new email:");
-                            $newstatus = readline("Enter new password");
-                            echo "  :
-            1.admin
-            2.author
-            3.editor
-        ";
-
-                            (int) $choicerole = readline("Enter new role:");
-                            $newbio = $newmoderation = "";
-
-                            switch ($choicerole) {
-                                case 1: {
-                                    $role = 'admin';
-                                    break;
-                                }
-                                case 2: {
-                                    $newbio = readline("Enter the authors biography:");
-                                    $role = 'author';
-                                    break;
-                                }
-                                case 3: {
-                                    $newmoderation = readline("Enter the editor moderatationlevel('junior','senior','chief'):");
-                                    $role = 'editor';
-                                    break;
-                                }
-                                default: {
-                                    echo "invalid choice!";
-                                    break;
-                                }
+                            $newtitle = readline("Enter new title:");
+                            $newcontent = readline("Enter new content:");
+                            
+                            
+                            echo "Available Categories:\n";
+                            foreach ($categories as $category) {
+                                $info = $category->getCategoryInfo();
+                                echo "ID: {$info['id']} - {$info['name']}\n";
                             }
-                            if (Admin::modifyUserbyId($users, $searchforid, $newusername, $newemail, $newpassword, $role, $newbio, $newmoderation)) {
-                                echo "user modified successfully\n";
-                            } else {
-                                echo "failed to modify user\n";
-                            }
-
-                            foreach ($users as $user) {
-                                $info = $user->getUserInfo();
-                                echo "ID: {$info['id']}\n";
-                                echo "Username: {$info['username']}\n";
-                                echo "Role: {$info['role']}\n";
-                                echo "Email: {$info['email']}\n";
-                                echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
-                                echo "--------------------------\n";
-                            }
+                            $new_category_id = readline("Enter new category ID:");
+                            $new_category_id = empty($new_category_id) ? null : (int)$new_category_id;
 
                             break;
                         }

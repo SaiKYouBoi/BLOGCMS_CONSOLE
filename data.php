@@ -28,36 +28,93 @@ $articles = [
         "The Rise of Artificial Intelligence",
         "Artificial Intelligence is transforming industries from healthcare to finance...",
         "published",
-        $users[3]->getUserInfo()['id']
+        $users[3]->getUserInfo()['id'],
+        1
     ),
     new Article(
         2,
         "Why Sustainable Living Matters",
         "Sustainable living is no longer a trend but a necessity in modern society...",
         "published",
-        $users[4]->getUserInfo()['id']
+        $users[4]->getUserInfo()['id'],
+        2
     ),
     new Article(
         3,
         "Getting Started with PHP OOP",
         "Object-Oriented Programming in PHP helps structure applications in a clean way...",
         "draft",
-        $users[5]->getUserInfo()['id']
+        $users[5]->getUserInfo()['id'],
+        3
+
     ),
     new Article(
         4,
         "Healthy Habits for Busy Professionals",
         "Maintaining healthy habits can be challenging when life gets busy...",
         "archived",
-        $users[6]->getUserInfo()['id']
+        $users[6]->getUserInfo()['id'],
+        4
+
     ),
     new Article(
         5,
         "Understanding Climate Change",
         "Climate change affects ecosystems, economies, and daily life across the globe...",
         "published",
-        $users[7]->getUserInfo()['id']
+        $users[7]->getUserInfo()['id'],
+        5
     )
 ];
 
+$categories = [
+    new Categorie(
+        1,
+        "Technology",
+        "Latest tech news, gadgets, programming, and innovations",
+        new DateTime('2023-01-15 10:30:00')
+    ),
+    new Categorie(
+        2,
+        "Lifestyle & Sustainability",
+        "Sustainable living, eco-friendly tips, and lifestyle improvements",
+        new DateTime('2023-02-20 14:45:00')
+    ),
+    new Categorie(
+        3,
+        "Programming & Development",
+        "Software development tutorials, coding tips, and programming languages",
+        new DateTime('2023-03-10 09:15:00')
+    ),
+    new Categorie(
+        4,
+        "Health & Wellness",
+        "Health tips, fitness, nutrition, and mental wellbeing",
+        new DateTime('2023-04-05 16:20:00')
+    ),
+    new Categorie(
+        5,
+        "Environment & Science",
+        "Climate change, environmental issues, and scientific discoveries",
+        new DateTime('2023-05-12 11:00:00')
+    ),
+    new Categorie(
+        6,
+        "Business & Finance",
+        "Business strategies, finance tips, and market trends",
+        new DateTime('2023-06-18 13:30:00')
+    ),
+    new Categorie(
+        7,
+        "Entertainment",
+        "Movies, music, games, and pop culture",
+        new DateTime('2023-07-22 15:45:00')
+    ),
+    new Categorie(
+        8,
+        "Education",
+        "Learning resources, study tips, and educational trends",
+        new DateTime('2023-08-30 10:00:00')
+    )
+];
 

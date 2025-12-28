@@ -37,5 +37,6 @@ while (true) {
         }
     } else {
          echo "Invalid Credentials";
+         break;
     }
 }

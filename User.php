@@ -91,10 +91,10 @@ abstract class User{
         $this->passwordHash = $password;
     }
 
-    public function createArticle(string $title, string $content): Article {
+    public function createArticle(string $title, string $content, $category_id = null): Article {
         global $articles;
         $id = count($articles) + 1;
-        $article = new Article($id, $title, $content, 'draft', $this->id);
+        $article = new Article($id, $title, $content, 'draft', $this->getUserInfo()['id'], $category_id);
         $this->articles[] = $article;
         $articles[] = $article;
         return $article;
