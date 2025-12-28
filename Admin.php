@@ -81,4 +81,40 @@ class Admin extends User
         }
         return false;
     }
+
+    public function updateArticle($article,$newtitle, $newcontent, $newcategory_id) {
+        global $users;
+        $updated = false;
+        
+        if ($newtitle) {
+            $article->title = $newtitle;
+            $updated = true;
+        }
+        
+        if ($newcontent) {
+            $article->content = $newcontent;;
+            $updated = true;
+        }
+        
+        
+        if ($newcategory_id) {
+            $article->category_id = $newcategory_id;;
+        }
+
+        foreach($users as $user){
+            if($user->getUserInfo()['id'] == $article->getArticleInfo()['user_id'] ){
+                $userarticles = $user->getArticles();
+                foreach ($userarticles as $index => $uarticle) {
+                    if($uarticle->getArticleInfo()['id'] == $article->getArticleInfo()['id']){
+                        $userarticles[$index] = $article;
+                        break;
+                    }
+                }
+                $user->setArticles($userarticles);
+                break;
+            }
+        }
+
+        return $updated;
+    }
 }

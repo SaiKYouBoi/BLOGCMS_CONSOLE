@@ -1,8 +1,10 @@
 <?php
-class Categorie{
+class Category{
     private int $id;
     private string $name;
     private string $description;
+
+    protected array $categories = [];
     private DateTime $createdAt;
 
     public function __construct(

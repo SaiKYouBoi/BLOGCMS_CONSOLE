@@ -30,6 +30,8 @@ abstract class User{
     
     abstract public function getRole():string;
 
+    //abstract public function updateArticle($newtitle = null, $newcontent = null, $newstatus = null, $newcategory_id = null);
+
     public function getUserInfo():array{
 
         return [
@@ -100,12 +102,14 @@ abstract class User{
         return $article;
     }
 
-    public function getArticles(){
+    public function getArticles(): array{
         return $this->articles;
     }
 
     public function setArticles($articles){
         $this->articles = $articles;
     }
+
+    
 
 }

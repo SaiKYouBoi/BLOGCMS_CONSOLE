@@ -41,4 +41,12 @@ class Article{
         ];
     }
 
+    public function __set($name, $value){
+        $this->{$name} = $value;
+    }
+
+    public function publish(){
+        $this->status = "published";
+        $this->publishedAt = new DateTime();
+    }
 }

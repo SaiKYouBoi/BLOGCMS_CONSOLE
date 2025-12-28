@@ -1,8 +1,7 @@
 <?php
-
 function showAdminMenu()
 {
-    global $users, $user_id, $articles,$categories;
+    global $users, $user_id, $articles, $categories, $islogged;
     $current_user = null;
     foreach ($users as $user) {
         if ($user->getUserInfo()['id'] === $user_id) {
@@ -15,9 +14,10 @@ function showAdminMenu()
     1.User Managment
     2.Article Management
     3.Category Management
-    4.exit
+    4.Logout
+    5.Exit
         ";
-    (int) $choice = readline("Your choice:");
+    $choice = readline("Your choice:");
 
     switch ($choice) {
         case 1: {
@@ -26,7 +26,7 @@ function showAdminMenu()
  ------------- USER MANAGMENT ------------
     1.Create user
     2.List of Users
-    3.exit
+    3.Exit
         ";
 
             $umchoice = readline("Your choice:");
@@ -98,10 +98,10 @@ function showAdminMenu()
                             $newemail = readline("Enter new email:");
                             $newpassword = readline("Enter new password");
                             echo "roles:
-            1.admin
-            2.author
-            3.editor
-        ";
+                            1.admin
+                            2.author
+                            3.editor
+                        ";
 
                             (int) $choicerole = readline("Enter new role:");
                             $newbio = $newmoderation = "";
@@ -166,11 +166,8 @@ function showAdminMenu()
             echo "
  ------------- ARTICLE MANAGMENT ------------
     1.Create Article
-    2.Publish Article
-    3.Modify Article
-    4.Delete Article
-    5.List of Articles
-    6.exit
+    2.List of Articles
+    3.exit
         ";
             (int) $amchoice = readline("Your choice:");
             switch ($amchoice) {
@@ -180,46 +177,45 @@ function showAdminMenu()
 
                     echo "Available Categories:\n";
                     foreach ($categories as $category) {
-                    $info = $category->getCategoryInfo();
-                    echo "ID: {$info['id']} - {$info['name']}\n";
+                        $info = $category->getCategoryInfo();
+                        echo "ID: {$info['id']} - {$info['name']}\n";
                     }
 
                     $category_id = readline("Enter category ID:");
-                    $category_id = empty($category_id) ? null : (int)$category_id;
+                    $category_id = empty($category_id) ? null : (int) $category_id;
 
                     if ($category_id !== null) {
-                    $categoryExists = false;
+                        $categoryExists = false;
 
-                    foreach ($categories as $category) {
-                        if ($category->getCategoryInfo()['id'] === $category_id) {
-                            $categoryExists = true;
+                        foreach ($categories as $category) {
+                            if ($category->getCategoryInfo()['id'] === $category_id) {
+                                $categoryExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!$categoryExists) {
+                            echo "Category ID not found.\n";
                             break;
                         }
-                    }
 
-                     if (!$categoryExists) {
-                        echo "Category ID not found.\n";
+                        if ($current_user->createArticle($title, $content, $category_id)) {
+                            echo "Article created successfully";
+                        } else {
+                            echo "Error while creating article";
+                        }
                         break;
                     }
-                                                                                                                                                                                                                                                               
-                    if ($current_user->createArticle($title, $content,$category_id)) {
-                        echo "Article created successfully";
-                    } else {
-                        echo "Error while creating article";
-                    }
-                    break;
                 }
-            }
-                case 5: {
+                case 2: {
                     foreach ($articles as $article) {
                         $info = $article->getArticleInfo();
-                        
+
                         echo "ID: {$info['id']}\n";
                         echo "Title: {$info['title']}\n";
                         echo "Content: {$info['content']}\n";
                         echo "Status: {$info['status']}\n";
-                        $category_name = "None";
-                        
+                        $category_name = "";
                         foreach ($categories as $category) {
                             if ($category->getCategoryInfo()['id'] === $info['category_id']) {
                                 $category_name = $category->getCategoryInfo()['name'];
@@ -227,6 +223,14 @@ function showAdminMenu()
                             }
                         }
                         echo "Category: {$category_name}\n";
+                        $user_name = "";
+                        foreach ($users as $author) {
+                            if ($author->getUserInfo()['id'] === $info['user_id']) {
+                                $user_name = $author->getUserInfo()['username'];
+                                break;
+                            }
+                        }
+                        echo "user: {$user_name}\n";
                         echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
                         $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
                         echo "Created at: {$published}\n";
@@ -238,19 +242,36 @@ function showAdminMenu()
                     $found = false;
                     foreach ($articles as $article) {
                         $info = $article->getArticleInfo();
-                        if($info['id'] === (int)$searchfor){
-                        echo "ID: {$info['id']}\n";
-                        echo "Title: {$info['title']}\n";
-                        echo "Content: {$info['content']}\n";
-                        echo "Status: {$info['status']}\n";
-                        echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
-                        $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
-                        echo "Created at: {$published}\n";
-                        echo "--------------------------\n";
-                        echo "1.[Delete]   2.[Modify]   3.[Publish]\n";
-                        $searchforid = $info['id'];
-                        $found = true;
-                    }
+                        if ($info['id'] === (int) $searchfor) {
+                            echo "--------- Article ---------\n";
+                            echo "ID: {$info['id']}\n";
+                            echo "Title: {$info['title']}\n";
+                            echo "Content: {$info['content']}\n";
+                            echo "Status: {$info['status']}\n";
+                            $category_name = "";
+                            foreach ($categories as $category) {
+                                if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                                    $category_name = $category->getCategoryInfo()['name'];
+                                    break;
+                                }
+                            }
+                            echo "Category: {$category_name}\n";
+                            $user_name = "";
+                            foreach ($users as $author) {
+                                if ($author->getUserInfo()['id'] === $info['user_id']) {
+                                    $user_name = $author->getUserInfo()['username'];
+                                    break;
+                                }
+                            }
+                            echo "user: {$user_name}\n";
+                            echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
+                            $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
+                            echo "Created at: {$published}\n";
+                            echo "--------------------------\n";
+                            echo "1.[Delete]   2.[Modify]   3.[Publish]\n";
+                            $searchforid = $info['id'];
+                            $found = true;
+                        }
                     }
 
                     if (!$found) {
@@ -274,16 +295,66 @@ function showAdminMenu()
                         case 2: {
                             $newtitle = readline("Enter new title:");
                             $newcontent = readline("Enter new content:");
-                            
-                            
+
                             echo "Available Categories:\n";
                             foreach ($categories as $category) {
                                 $info = $category->getCategoryInfo();
                                 echo "ID: {$info['id']} - {$info['name']}\n";
                             }
                             $new_category_id = readline("Enter new category ID:");
-                            $new_category_id = empty($new_category_id) ? null : (int)$new_category_id;
+                            $new_category_id = empty($new_category_id) ? null : (int) $new_category_id;
 
+                            if (!$new_category_id) {
+                                echo "You have to choose a Category";
+                                break;
+                            }
+                            $articleUpdated = false;
+                            foreach ($articles as $article) {
+                                $info = $article->getArticleInfo();
+                                if ($info['id'] === $searchforid) {
+
+                                    $articleUpdated = ArticleManager::updateArticle($article, $newtitle, $newcontent, $new_category_id);
+                                    break;
+                                }
+                            }
+                            if ($articleUpdated) {
+                                echo "article modified successfully\n";
+
+                                foreach ($articles as $article) {
+                                    $info = $article->getArticleInfo();
+                                    if ($info['id'] === $searchforid) {
+                                        echo "\n--- Updated Article ---\n";
+                                        echo "ID: {$info['id']}\n";
+                                        echo "Title: {$info['title']}\n";
+                                        echo "Status: {$info['status']}\n";
+
+
+                                        $category_name = "None";
+                                        foreach ($categories as $category) {
+                                            if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                                                $category_name = $category->getCategoryInfo()['name'];
+                                                break;
+                                            }
+                                        }
+                                        echo "Category: {$category_name}\n";
+                                        echo "--------------------------\n";
+                                        break;
+                                    }
+                                }
+                            } else {
+                                echo "failed to modify article\n";
+                            }
+
+                            break;
+                        }
+                        case 3: {
+                            foreach ($articles as $article) {
+                                $info = $article->getArticleInfo();
+                                if ($info['id'] === $searchforid) {
+                                    $article->publish();
+                                    break;
+                                }
+                            }
                             break;
                         }
                         default: {
@@ -302,8 +373,53 @@ function showAdminMenu()
             break;
         }
 
+        case 3: {
+            echo "
+            ------------- CATEGORY MANAGMENT ------------
+                1.Create category
+                2.List of categories
+                3.exit
+                    ";
+            $choice = readline("Your choice:");
+
+            switch ($choice) {
+                case 1: {
+                    $namecategory = readline("Enter the name of a category:");
+                    $description = readline("Enter the description of the category:");
+                    $id = count($categories) + 1;
+                    $createdCategory = new Category($id, $namecategory, $description, new DateTime);
+                    if ($createdCategory) {
+                        $categories[] = $createdCategory;
+                        echo "Catrgory created successfully";
+                    } else {
+                        echo "Error while creating Category";
+                    }
+                    break;
+                }
+
+                case 2: {
+                    echo "-------Categories:------\n";
+                    foreach ($categories as $category) {
+                        $info = $category->getCategoryInfo();
+                        echo "ID: {$info['id']} - {$info['name']}\n";
+                    }
+                    break;
+                }
+                case 3: {
+                    break;
+                }
+                default:
+                    break;
+            }
+            break;
+        }
         case 4: {
-            exit();
+            $islogged = false;
+            $current_user = null;
+            break;
+        }
+        case 5: {
+            break;
         }
 
         default: {
@@ -314,3 +430,526 @@ function showAdminMenu()
     }
 }
 
+function showAuthorMenu()
+{
+    global $users, $user_id, $articles, $categories, $islogged;
+    $current_user = null;
+    foreach ($users as $user) {
+        if ($user->getUserInfo()['id'] === $user_id) {
+            $current_user = $user;
+            break;
+        }
+    }
+
+    echo "
+ ------------- ARTICLE MANAGMENT ------------
+    1.Create Article
+    2.List of Articles
+    3.Logout
+    4.Exit
+        ";
+    (int) $amchoice = readline("Your choice:");
+    switch ($amchoice) {
+        case 1: {
+            $title = readline("Enter a title:");
+            $content = readline("Enter the content:");
+
+            echo "Available Categories:\n";
+            foreach ($categories as $category) {
+                $info = $category->getCategoryInfo();
+                echo "ID: {$info['id']} - {$info['name']}\n";
+            }
+
+            $category_id = readline("Enter category ID:");
+            $category_id = empty($category_id) ? null : (int) $category_id;
+
+            if ($category_id !== null) {
+                $categoryExists = false;
+
+                foreach ($categories as $category) {
+                    if ($category->getCategoryInfo()['id'] === $category_id) {
+                        $categoryExists = true;
+                        break;
+                    }
+                }
+
+                if (!$categoryExists) {
+                    echo "Category ID not found.\n";
+                    break;
+                }
+
+                if ($current_user->createArticle($title, $content, $category_id)) {
+                    echo "Article created successfully";
+                } else {
+                    echo "Error while creating article";
+                }
+                break;
+            }
+        }
+        case 2: {
+            foreach ($articles as $article) {
+                if ($article->getArticleInfo()['status'] === "published" || ($article->getArticleInfo()["user_id"] == $current_user->getUserInfo()['id'])) {
+                    $info = $article->getArticleInfo();
+
+                    echo "ID: {$info['id']}\n";
+                    echo "Title: {$info['title']}\n";
+                    echo "Content: {$info['content']}\n";
+                    echo "Status: {$info['status']}\n";
+                    $category_name = "";
+                    foreach ($categories as $category) {
+                        if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                            $category_name = $category->getCategoryInfo()['name'];
+                            break;
+                        }
+                    }
+                    echo "Category: {$category_name}\n";
+                    $user_name = "";
+                    foreach ($users as $author) {
+                        if ($author->getUserInfo()['id'] === $info['user_id']) {
+                            $user_name = $author->getUserInfo()['username'];
+                            break;
+                        }
+                    }
+                    echo "user: {$user_name}\n";
+                    echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
+                    $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
+                    echo "Created at: {$published}\n";
+                    echo "--------------------------\n";
+                }
+            }
+
+            $searchfor = readline("Search for a article(by id):");
+            $searchforid = null;
+            $found = false;
+            foreach ($current_user->getArticles() as $article) {
+                $info = $article->getArticleInfo();
+                if ($info['id'] === (int) $searchfor) {
+                    echo "--------- Article ---------\n";
+                    echo "ID: {$info['id']}\n";
+                    echo "Title: {$info['title']}\n";
+                    echo "Content: {$info['content']}\n";
+                    echo "Status: {$info['status']}\n";
+                    $category_name = "";
+                    foreach ($categories as $category) {
+                        if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                            $category_name = $category->getCategoryInfo()['name'];
+                            break;
+                        }
+                    }
+                    echo "Category: {$category_name}\n";
+                    $user_name = "";
+                    foreach ($users as $author) {
+                        if ($author->getUserInfo()['id'] === $info['user_id']) {
+                            $user_name = $author->getUserInfo()['username'];
+                            break;
+                        }
+                    }
+                    echo "user: {$user_name}\n";
+                    echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
+                    $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
+                    echo "Created at: {$published}\n";
+                    echo "--------------------------\n";
+                    echo "1.[Delete]   2.[Modify]   3.[Publish]\n";
+                    $searchforid = $info['id'];
+                    $found = true;
+                }
+            }
+
+            if (!$found) {
+                echo "NOT FOUND!";
+                return;
+            }
+
+            (int) $managaingchoice = readline("Chose a number:");
+
+
+            switch ($managaingchoice) {
+                case 1: {
+
+                    if (ArticleManager::deleteArticlebyId($searchforid)) {
+                        echo "article deleted successfully\n";
+                    } else {
+                        echo "failed to delete article\n";
+                    }
+                    break;
+                }
+                case 2: {
+                    $newtitle = readline("Enter new title:");
+                    $newcontent = readline("Enter new content:");
+
+                    echo "Available Categories:\n";
+                    foreach ($categories as $category) {
+                        $info = $category->getCategoryInfo();
+                        echo "ID: {$info['id']} - {$info['name']}\n";
+                    }
+                    $new_category_id = readline("Enter new category ID:");
+                    $new_category_id = empty($new_category_id) ? null : (int) $new_category_id;
+
+                    if (!$new_category_id) {
+                        echo "You have to choose a Category";
+                        break;
+                    }
+                    $articleUpdated = false;
+                    foreach ($articles as $article) {
+                        $info = $article->getArticleInfo();
+                        if ($info['id'] === $searchforid) {
+
+                            $articleUpdated = ArticleManager::updateArticle($article, $newtitle, $newcontent, $new_category_id);
+                            break;
+                        }
+                    }
+                    if ($articleUpdated) {
+                        echo "article modified successfully\n";
+
+                        foreach ($articles as $article) {
+                            $info = $article->getArticleInfo();
+                            if ($info['id'] === $searchforid) {
+                                echo "\n--- Updated Article ---\n";
+                                echo "ID: {$info['id']}\n";
+                                echo "Title: {$info['title']}\n";
+                                echo "Status: {$info['status']}\n";
+
+
+                                $category_name = "None";
+                                foreach ($categories as $category) {
+                                    if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                                        $category_name = $category->getCategoryInfo()['name'];
+                                        break;
+                                    }
+                                }
+                                echo "Category: {$category_name}\n";
+                                echo "--------------------------\n";
+                                break;
+                            }
+                        }
+                    } else {
+                        echo "failed to modify article\n";
+                    }
+
+                    break;
+                }
+                case 3: {
+                    foreach ($articles as $article) {
+                        $info = $article->getArticleInfo();
+                        if ($info['id'] === $searchforid) {
+                            $article->publish();
+                            break;
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    echo "invalid choice";
+                    break;
+                }
+            }
+            break;
+        }
+        case 3: {
+            $islogged = false;
+            $current_user = null;
+            break;
+        }
+        case 4: {
+            exit();
+        }
+
+        default:
+            break;
+    }
+}
+
+function showEditorMenu()
+{
+    global $users, $user_id, $articles, $categories, $islogged;
+    $current_user = null;
+    foreach ($users as $user) {
+        if ($user->getUserInfo()['id'] === $user_id) {
+            $current_user = $user;
+            break;
+        }
+    }
+    global $users, $user_id, $articles, $categories;
+    $current_user = null;
+    foreach ($users as $user) {
+        if ($user->getUserInfo()['id'] === $user_id) {
+            $current_user = $user;
+            break;
+        }
+    }
+    echo "
+ ------------- MAIN MENU ------------
+    1.Article Management
+    2.Category Management
+    3.Logout
+    4.Exit
+        ";
+    $choice = readline("Your choice:");
+
+    switch ($choice) {
+        case 1: {
+            echo "
+ ------------- ARTICLE MANAGMENT ------------
+    1.Create Article
+    2.List of Articles
+    3.exit
+        ";
+            (int) $amchoice = readline("Your choice:");
+            switch ($amchoice) {
+                case 1: {
+                    $title = readline("Enter a title:");
+                    $content = readline("Enter the content:");
+
+                    echo "Available Categories:\n";
+                    foreach ($categories as $category) {
+                        $info = $category->getCategoryInfo();
+                        echo "ID: {$info['id']} - {$info['name']}\n";
+                    }
+
+                    $category_id = readline("Enter category ID:");
+                    $category_id = empty($category_id) ? null : (int) $category_id;
+
+                    if ($category_id !== null) {
+                        $categoryExists = false;
+
+                        foreach ($categories as $category) {
+                            if ($category->getCategoryInfo()['id'] === $category_id) {
+                                $categoryExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!$categoryExists) {
+                            echo "Category ID not found.\n";
+                            break;
+                        }
+
+                        if ($current_user->createArticle($title, $content, $category_id)) {
+                            echo "Article created successfully";
+                        } else {
+                            echo "Error while creating article";
+                        }
+                        break;
+                    }
+                }
+                case 2: {
+                    foreach ($articles as $article) {
+                        $info = $article->getArticleInfo();
+
+                        echo "ID: {$info['id']}\n";
+                        echo "Title: {$info['title']}\n";
+                        echo "Content: {$info['content']}\n";
+                        echo "Status: {$info['status']}\n";
+                        $category_name = "";
+                        foreach ($categories as $category) {
+                            if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                                $category_name = $category->getCategoryInfo()['name'];
+                                break;
+                            }
+                        }
+                        echo "Category: {$category_name}\n";
+                        $user_name = "";
+                        foreach ($users as $author) {
+                            if ($author->getUserInfo()['id'] === $info['user_id']) {
+                                $user_name = $author->getUserInfo()['username'];
+                                break;
+                            }
+                        }
+                        echo "user: {$user_name}\n";
+                        echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
+                        $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
+                        echo "Created at: {$published}\n";
+                        echo "--------------------------\n";
+                    }
+
+                    $searchfor = readline("Search for a article(by id):");
+                    $searchforid = null;
+                    $found = false;
+                    foreach ($articles as $article) {
+                        $info = $article->getArticleInfo();
+                        if ($info['id'] === (int) $searchfor) {
+                            echo "--------- Article ---------\n";
+                            echo "ID: {$info['id']}\n";
+                            echo "Title: {$info['title']}\n";
+                            echo "Content: {$info['content']}\n";
+                            echo "Status: {$info['status']}\n";
+                            $category_name = "";
+                            foreach ($categories as $category) {
+                                if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                                    $category_name = $category->getCategoryInfo()['name'];
+                                    break;
+                                }
+                            }
+                            echo "Category: {$category_name}\n";
+                            $user_name = "";
+                            foreach ($users as $author) {
+                                if ($author->getUserInfo()['id'] === $info['user_id']) {
+                                    $user_name = $author->getUserInfo()['username'];
+                                    break;
+                                }
+                            }
+                            echo "user: {$user_name}\n";
+                            echo "Created at: {$info['createdAt']->format('Y-m-d H:i:s')}\n";
+                            $published = $info['publishedAt'] ? $info['publishedAt']->format('Y-m-d H:i:s') : 'Not published yet';
+                            echo "Created at: {$published}\n";
+                            echo "--------------------------\n";
+                            echo "1.[Delete]   2.[Modify]   3.[Publish]\n";
+                            $searchforid = $info['id'];
+                            $found = true;
+                        }
+                    }
+
+                    if (!$found) {
+                        echo "NOT FOUND!";
+                        return;
+                    }
+
+                    (int) $managaingchoice = readline("Chose a number:");
+
+
+                    switch ($managaingchoice) {
+                        case 1: {
+
+                            if (ArticleManager::deleteArticlebyId($searchforid)) {
+                                echo "article deleted successfully\n";
+                            } else {
+                                echo "failed to delete article\n";
+                            }
+                            break;
+                        }
+                        case 2: {
+                            $newtitle = readline("Enter new title:");
+                            $newcontent = readline("Enter new content:");
+
+                            echo "Available Categories:\n";
+                            foreach ($categories as $category) {
+                                $info = $category->getCategoryInfo();
+                                echo "ID: {$info['id']} - {$info['name']}\n";
+                            }
+                            $new_category_id = readline("Enter new category ID:");
+                            $new_category_id = empty($new_category_id) ? null : (int) $new_category_id;
+
+                            if (!$new_category_id) {
+                                echo "You have to choose a Category";
+                                break;
+                            }
+                            $articleUpdated = false;
+                            foreach ($articles as $article) {
+                                $info = $article->getArticleInfo();
+                                if ($info['id'] === $searchforid) {
+
+                                    $articleUpdated = ArticleManager::updateArticle($article, $newtitle, $newcontent, $new_category_id);
+                                    break;
+                                }
+                            }
+                            if ($articleUpdated) {
+                                echo "article modified successfully\n";
+
+                                foreach ($articles as $article) {
+                                    $info = $article->getArticleInfo();
+                                    if ($info['id'] === $searchforid) {
+                                        echo "\n--- Updated Article ---\n";
+                                        echo "ID: {$info['id']}\n";
+                                        echo "Title: {$info['title']}\n";
+                                        echo "Status: {$info['status']}\n";
+
+
+                                        $category_name = "None";
+                                        foreach ($categories as $category) {
+                                            if ($category->getCategoryInfo()['id'] === $info['category_id']) {
+                                                $category_name = $category->getCategoryInfo()['name'];
+                                                break;
+                                            }
+                                        }
+                                        echo "Category: {$category_name}\n";
+                                        echo "--------------------------\n";
+                                        break;
+                                    }
+                                }
+                            } else {
+                                echo "failed to modify article\n";
+                            }
+
+                            break;
+                        }
+                        case 3: {
+                            foreach ($articles as $article) {
+                                $info = $article->getArticleInfo();
+                                if ($info['id'] === $searchforid) {
+                                    $article->publish();
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        default: {
+                            echo "invalid choice";
+                            break;
+                        }
+                    }
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+
+            break;
+        }
+        case 2: {
+            echo "
+            ------------- CATEGORY MANAGMENT ------------
+                1.Create category
+                2.List of categories
+                3.exit
+                    ";
+            $choice = readline("Your choice:");
+
+            switch ($choice) {
+                case 1: {
+                    $namecategory = readline("Enter the name of a category:");
+                    $description = readline("Enter the description of the category:");
+                    $id = count($categories) + 1;
+                    $createdCategory = new Category($id, $namecategory, $description, new DateTime);
+                    if ($createdCategory) {
+                        $categories[] = $createdCategory;
+                        echo "Catrgory created successfully";
+                    } else {
+                        echo "Error while creating Category";
+                    }
+                    break;
+                }
+
+                case 2: {
+                    echo "-------Categories:------\n";
+                    foreach ($categories as $category) {
+                        $info = $category->getCategoryInfo();
+                        echo "ID: {$info['id']} - {$info['name']}\n";
+                    }
+                    break;
+                }
+                case 3: {
+                    break;
+                }
+                default:
+                    break;
+            }
+            break;
+        }
+        case 3: {
+            $islogged = false;
+            $current_user = null;
+            break;
+        }
+        case 4: {
+            break;
+        }
+        default: {
+
+            echo "invalid choice\n";
+            break;
+        }
+    }
+
+}

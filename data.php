@@ -1,6 +1,8 @@
 <?php
 $users = [
     new Admin(1, "SaiKYouBoi", "saikyouboi@gmail.com", '$2y$12$exEBoerVJko9pSA791S51.NTg7u9lhdeLW2umg8BKp8JwdJ2aNrsS', new DateTime('2023-01-15'), new DateTime('2024-12-24'), true),
+    new Author(69, "SaiKYouBo", "saikyoubo@gmail.com", '$2y$12$exEBoerVJko9pSA791S51.NTg7u9lhdeLW2umg8BKp8JwdJ2aNrsS', new DateTime('2023-01-15'), new DateTime('2024-12-24'), true),
+    new Editor(67, "SaiKYouB", "saikyoub@gmail.com", '$2y$12$exEBoerVJko9pSA791S51.NTg7u9lhdeLW2umg8BKp8JwdJ2aNrsS', new DateTime('2023-01-15'), new DateTime('2024-12-24'), true),
     new Editor(2, "marie_dubois", "marie.dubois@email.com", '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', new DateTime('2023-03-20'), new DateTime('2024-12-23'), 'junior'),
     new Author(3, "pierre_leroy", "pierre.leroy@gmail.com", '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', new DateTime('2023-04-10'), new DateTime('2024-12-22'), "Tech blogger passionate about AI and emerging technologies."),
     new Author(4, "sophie_martin", "sophie.martin@protonmail.com", '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', new DateTime('2023-05-05'), new DateTime('2024-12-20'), "Lifestyle writer focusing on wellness, travel, and sustainable living."),
@@ -68,49 +70,49 @@ $articles = [
 ];
 
 $categories = [
-    new Categorie(
+    new Category(
         1,
         "Technology",
         "Latest tech news, gadgets, programming, and innovations",
         new DateTime('2023-01-15 10:30:00')
     ),
-    new Categorie(
+    new Category(
         2,
         "Lifestyle & Sustainability",
         "Sustainable living, eco-friendly tips, and lifestyle improvements",
         new DateTime('2023-02-20 14:45:00')
     ),
-    new Categorie(
+    new Category(
         3,
         "Programming & Development",
         "Software development tutorials, coding tips, and programming languages",
         new DateTime('2023-03-10 09:15:00')
     ),
-    new Categorie(
+    new Category(
         4,
         "Health & Wellness",
         "Health tips, fitness, nutrition, and mental wellbeing",
         new DateTime('2023-04-05 16:20:00')
     ),
-    new Categorie(
+    new Category(
         5,
         "Environment & Science",
         "Climate change, environmental issues, and scientific discoveries",
         new DateTime('2023-05-12 11:00:00')
     ),
-    new Categorie(
+    new Category(
         6,
         "Business & Finance",
         "Business strategies, finance tips, and market trends",
         new DateTime('2023-06-18 13:30:00')
     ),
-    new Categorie(
+    new Category(
         7,
         "Entertainment",
         "Movies, music, games, and pop culture",
         new DateTime('2023-07-22 15:45:00')
     ),
-    new Categorie(
+    new Category(
         8,
         "Education",
         "Learning resources, study tips, and educational trends",
