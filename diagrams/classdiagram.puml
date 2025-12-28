@@ -91,15 +91,10 @@ class Comment {
   + reject() 
 }
 
-
 User <|-- Admin
 User <|-- Author
 User <|-- Editor
 
-
-Article --o Author
-
-
-
+Article *-- Author
 
 @enduml

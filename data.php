@@ -28,45 +28,35 @@ $articles = [
         "The Rise of Artificial Intelligence",
         "Artificial Intelligence is transforming industries from healthcare to finance...",
         "published",
-        $users[3],
-        new DateTime("2025-01-10 09:15:00"),
-        new DateTime("2025-01-12 08:00:00")
+        $users[3]->getUserInfo()['id']
     ),
     new Article(
         2,
         "Why Sustainable Living Matters",
         "Sustainable living is no longer a trend but a necessity in modern society...",
         "published",
-        $users[4],
-        new DateTime("2025-01-15 14:30:00"),
-        new DateTime("2025-01-16 10:00:00")
+        $users[4]->getUserInfo()['id']
     ),
     new Article(
         3,
         "Getting Started with PHP OOP",
         "Object-Oriented Programming in PHP helps structure applications in a clean way...",
         "draft",
-        $users[5],
-        new DateTime("2025-02-01 11:45:00"),
-        null
+        $users[5]->getUserInfo()['id']
     ),
     new Article(
         4,
         "Healthy Habits for Busy Professionals",
         "Maintaining healthy habits can be challenging when life gets busy...",
         "archived",
-        $users[6],
-        new DateTime("2024-12-05 16:20:00"),
-        new DateTime("2024-12-06 09:00:00")
+        $users[6]->getUserInfo()['id']
     ),
     new Article(
         5,
         "Understanding Climate Change",
         "Climate change affects ecosystems, economies, and daily life across the globe...",
         "published",
-        $users[3],
-        new DateTime("2025-02-20 08:00:00"),
-        new DateTime("2025-02-21 07:30:00")
+        $users[7]->getUserInfo()['id']
     )
 ];
 

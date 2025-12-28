@@ -8,6 +8,7 @@ abstract class User{
     protected string $username;
     protected string $email;
     protected string $passwordHash;
+    protected array $articles = [];
     protected DateTime $createdAt;
     private ?DateTime $lastLogin = null;
 
@@ -78,12 +79,33 @@ abstract class User{
         return null;
     }
 
-    public function setUserName(string $username){
+    public function setUsername(string $username): void {
         $this->username = $username;
     }
-     public function setUserEmail(string $email){
+
+    public function setEmail(string $email): void {
         $this->email = $email;
     }
 
+    public function setPassword(string $password): void {
+        $this->passwordHash = $password;
+    }
+
+    public function createArticle(string $title, string $content): Article {
+        global $articles;
+        $id = count($articles) + 1;
+        $article = new Article($id, $title, $content, 'draft', $this->id);
+        $this->articles[] = $article;
+        $articles[] = $article;
+        return $article;
+    }
+
+    public function getArticles(){
+        return $this->articles;
+    }
+
+    public function setArticles($articles){
+        $this->articles = $articles;
+    }
 
 }
